@@ -66,12 +66,11 @@ export default class DiscordRPC {
           "User-Agent": this._utils.getWindow().webContents.getUserAgent(),
           url: artworkUrl,
         },
-      })
-        .then(async (res) => {
-          const json = await res.json() as { imageUrl: string };
-          self._activityCache.largeImageKey = "https://images.weserv.nl/?url=" + json.imageUrl + "&w=1024&h=1024&output=jpg";
-          self._client.setActivity(self._activityCache);
-        });
+      }).then(async (res) => {
+        const json = (await res.json()) as { imageUrl: string };
+        self._activityCache.largeImageKey = "https://images.weserv.nl/?url=" + json.imageUrl + "&w=1024&h=1024&output=jpg";
+        self._client.setActivity(self._activityCache);
+      });
     });
     ipcMain.on("discordrpc:reload", (_event, configUpdate = null) => {
       console.log(`[DiscordRPC][reload] Reloading DiscordRPC.`);

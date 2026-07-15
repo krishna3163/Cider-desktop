@@ -731,11 +731,11 @@ export class BrowserWindow {
         details.requestHeaders["user-agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Cider/1.0.0 Chrome/96.0.4664.45 Electron/16.0.0 Safari/537.36";
       }
       if (details.url.includes("https://qq.com")) {
-        (details.requestHeaders["Accept"] = "*/*"), (details.requestHeaders["Accept-Encoding"] = "gzip, deflate, br"), (details.requestHeaders["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"), (details.requestHeaders["Referer"] = "https://y.qq.com/"), (details.requestHeaders["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X; zh-CN) AppleWebKit/537.51.1 (");
+        ((details.requestHeaders["Accept"] = "*/*"), (details.requestHeaders["Accept-Encoding"] = "gzip, deflate, br"), (details.requestHeaders["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"), (details.requestHeaders["Referer"] = "https://y.qq.com/"), (details.requestHeaders["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X; zh-CN) AppleWebKit/537.51.1 ("));
         ("KHTML, like Gecko) Mobile/17D50 UCBrowser/12.8.2.1268 Mobile AliApp(TUnionSDK/0.1.20.3) ");
       }
       if (details.url.includes("https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg")) {
-        (details.requestHeaders["Accept"] = "*/*"), (details.requestHeaders["Accept-Encoding"] = "gzip, deflate, br"), (details.requestHeaders["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"), (details.requestHeaders["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X; zh-CN) AppleWebKit/537.51.1 (");
+        ((details.requestHeaders["Accept"] = "*/*"), (details.requestHeaders["Accept-Encoding"] = "gzip, deflate, br"), (details.requestHeaders["Accept-Language"] = "zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6"), (details.requestHeaders["User-Agent"] = "Mozilla/5.0 (iPhone; CPU iPhone OS 13_3_1 like Mac OS X; zh-CN) AppleWebKit/537.51.1 ("));
         ("KHTML, like Gecko) Mobile/17D50 UCBrowser/12.8.2.1268 Mobile AliApp(TUnionSDK/0.1.20.3) ");
         details.requestHeaders["Referer"] = "https://y.qq.com/portal/player.html";
       }
@@ -884,7 +884,7 @@ export class BrowserWindow {
         if (url.endsWith("/")) url = url.slice(0, -1);
         let response = await utils.fetch(`${url}/archive/refs/heads/main.zip`);
         let repo = url.split("/").slice(-2).join("/");
-        let apiRepo = await utils.fetch(`https://api.github.com/repos/${repo}`).then((res) => res.json()) as { id: number};
+        let apiRepo = (await utils.fetch(`https://api.github.com/repos/${repo}`).then((res) => res.json())) as { id: number };
         console.debug(`REPO ID: ${apiRepo.id}`);
         // extract the files from the first folder in the zip response
         let zip = new AdmZip(Buffer.from(await response.arrayBuffer()));
@@ -894,7 +894,7 @@ export class BrowserWindow {
         }
         console.log(join(utils.getPath("plugins"), "gh_" + apiRepo.id));
         zip.extractEntryTo(entry, join(utils.getPath("plugins"), "gh_" + apiRepo.id), false, true);
-        let commit = await utils.fetch(`https://api.github.com/repos/${repo}/commits`).then((res) => res.json()) as { sha: string }[];
+        let commit = (await utils.fetch(`https://api.github.com/repos/${repo}/commits`).then((res) => res.json())) as { sha: string }[];
         console.debug(`COMMIT SHA: ${commit[0].sha}`);
         let theme = JSON.parse(readFileSync(join(utils.getPath("plugins"), "gh_" + apiRepo.id, "package.json"), "utf8"));
         theme.id = apiRepo.id;
@@ -921,13 +921,13 @@ export class BrowserWindow {
         if (url.endsWith("/")) url = url.slice(0, -1);
         let response = await utils.fetch(`${url}/archive/refs/heads/main.zip`);
         let repo = url.split("/").slice(-2).join("/");
-        let apiRepo = await utils
+        let apiRepo = (await utils
           .fetch(`https://api.github.com/repos/${repo}`, {
             headers: {
               "User-Agent": utils.getWindow().webContents.getUserAgent(),
             },
           })
-          .then((res) => res.json()) as { id: number}
+          .then((res) => res.json())) as { id: number };
         console.error(apiRepo);
         console.debug(`REPO ID: ${apiRepo.id}`);
         // extract the files from the first folder in the zip response
@@ -941,7 +941,7 @@ export class BrowserWindow {
           let subFolder = entry.entryName.split("/").slice(1, -1).join("/");
           zip.extractEntryTo(entry, join(utils.getPath("themes"), "gh_" + apiRepo.id, "/", subFolder), false, true);
         });
-        let commit = await utils.fetch(`https://api.github.com/repos/${repo}/commits`).then((res) => res.json()) as { sha: string }[];
+        let commit = (await utils.fetch(`https://api.github.com/repos/${repo}/commits`).then((res) => res.json())) as { sha: string }[];
         console.debug(`COMMIT SHA: ${commit[0].sha}`);
         let theme = JSON.parse(readFileSync(join(utils.getPath("themes"), "gh_" + apiRepo.id, "theme.json"), "utf8"));
         theme.id = apiRepo.id;
@@ -1207,7 +1207,7 @@ export class BrowserWindow {
 
         var inputIndex = 0;
 
-        for (var index = 0; index < length; ) {
+        for (var index = 0; index < length;) {
           result[index++] = leftChannel[inputIndex];
           result[index++] = rightChannel[inputIndex];
           inputIndex++;
@@ -1355,7 +1355,6 @@ export class BrowserWindow {
     }
     // Get previews for normalization
     ipcMain.on("getPreviewURL", (_event, url) => {
-
       fetch(url)
         .then((res) => res.arrayBuffer())
         .then(async (ab) => {
