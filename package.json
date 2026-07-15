@@ -52,7 +52,7 @@
     "lastfmapi": "^0.1.1",
     "mdns-js": "ciderapp/node-mdns-js",
     "mpris-service": "ciderapp/mpris-service",
-    "music-metadata": "7.14.0",
+    "music-metadata": "11.14.0",
     "node-fetch": "^3.3.2",
     "node-ssdp": "^4.0.1",
     "qrcode": "^1.5.3",
