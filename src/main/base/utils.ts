@@ -2,13 +2,13 @@ import { BrowserWindow, app, ipcMain } from "electron";
 import ElectronStore from "electron-store";
 import fetch from "node-fetch";
 import { readFileSync } from "node:fs";
-import { join, resolve,dirname } from "node:path";
+import { join, resolve, dirname } from "node:path";
 import { BrowserWindow as bw } from "./browserwindow.js";
 import { Store } from "./store.js";
 import { fileURLToPath } from "node:url";
 
 export class utils {
-  static hash = "fda9a6528649ea90dee35390wog"
+  static hash = "fda9a6528649ea90dee35390wog";
   static i18n: any = {};
 
   /**
@@ -105,7 +105,7 @@ export class utils {
 
   static async initializeTranslations() {
     try {
-      const crowdinModule = await import('@crowdin/ota-client');
+      const crowdinModule = await import("@crowdin/ota-client");
       // Handle both ESM default and CJS interop shapes
       const OtaClient = crowdinModule.default?.default || crowdinModule.default || crowdinModule;
       const crowdin = new OtaClient(this.hash);
@@ -113,16 +113,22 @@ export class utils {
       this.i18n = await crowdin.getTranslations();
     } catch (e) {
       console.error("[Cider] Failed to initialize translations, using fallback i18n:", e);
-      this.i18n = { "en": [{ content: {
-        "i18n.languageName": "English",
-        "i18n.languageNameEnglish": "English",
-        "term.playpause": "Play/Pause",
-        "term.next": "Next",
-        "term.previous": "Previous",
-        "term.quit": "Quit",
-        "action.tray.minimize": "Minimize",
-        "action.tray.show": "Show",
-      } }] };
+      this.i18n = {
+        en: [
+          {
+            content: {
+              "i18n.languageName": "English",
+              "i18n.languageNameEnglish": "English",
+              "term.playpause": "Play/Pause",
+              "term.next": "Next",
+              "term.previous": "Previous",
+              "term.quit": "Quit",
+              "action.tray.minimize": "Minimize",
+              "action.tray.show": "Show",
+            },
+          },
+        ],
+      };
     }
   }
 

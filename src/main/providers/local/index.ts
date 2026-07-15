@@ -74,11 +74,13 @@ export class LocalFiles {
       this.loadFromCache();
       if (this.localSongs.length > 0) {
         // Send cached list to renderer immediately
-        import("../../base/browserwindow.js").then(({ BrowserWindow }) => {
-          if (BrowserWindow?.win) {
-            BrowserWindow.win.webContents.send("getUpdatedLocalList", this.localSongs);
-          }
-        }).catch(() => {});
+        import("../../base/browserwindow.js")
+          .then(({ BrowserWindow }) => {
+            if (BrowserWindow?.win) {
+              BrowserWindow.win.webContents.send("getUpdatedLocalList", this.localSongs);
+            }
+          })
+          .catch(() => {});
       }
     }
 

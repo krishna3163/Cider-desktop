@@ -1,4 +1,4 @@
-import WebSocket, { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from "ws";
 import electron from "electron";
 
 interface standardResponse {

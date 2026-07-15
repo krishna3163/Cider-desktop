@@ -98,7 +98,7 @@ function capiInit() {
     if (request.readyState == 4 && request.status != 200) {
       console.warn("CAPI token request failed, using fallback developer token");
       const fakeContext = {
-        responseText: JSON.stringify({ token: fallbackToken })
+        responseText: JSON.stringify({ token: fallbackToken }),
       };
       initMusicKit.call(fakeContext);
     }

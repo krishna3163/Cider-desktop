@@ -1,4 +1,4 @@
-import {app} from "electron";
+import { app } from "electron";
 import { existsSync, lstatSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
