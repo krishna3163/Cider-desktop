@@ -4,6 +4,13 @@
             <div class="col">
                 <img src="assets/banner.png" alt="Cider Logo" style="display:block;margin:0 auto;width: 500px;">
                 <p style="text-align: center" id="version">{{ $root.getLz("term.version") }} {{ $root.version }}</p>
+                <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 8px; margin: 12px auto; max-width: 400px; text-align: center; font-size: 0.9rem; border: 1px solid rgba(255,255,255,0.08);">
+                    <strong style="color: var(--keyColor)">Cider Desktop (Dev Fork)</strong><br>
+                    <span style="color: rgba(255,255,255,0.7)">Optimized playback and DRM engine, local cache systems, low stutters, and active diagnostics modal.</span><br>
+                    <a href="https://github.com/krishna3163/Cider-desktop" target="_blank" style="color: var(--keyColor); font-weight: bold; text-decoration: none; display: inline-block; margin-top: 6px;">
+                        GitHub Repository & Updates
+                    </a>
+                </div>
                 <p style="text-align: center"> {{$root.getLz('about.thanks')}} </p>
 
                 <p style="text-align: center">"{{$root.getLz('term.appleMusic')}}" - {{$root.getLz('term.copyright')}} ©
@@ -24,8 +31,8 @@
                     Collective
                 </button>
                 <h3>{{$root.getLz('term.socials')}}</h3>
-                <button onclick="window.open('https://github.com/ciderapp/Cider')" class="md-btn sponsorBtn githubBtn">
-                    <img src="./assets/github.svg" />{{$root.getLz('term.github')}}
+                <button onclick="window.open('https://github.com/krishna3163/Cider-desktop')" class="md-btn sponsorBtn githubBtn">
+                    <img src="./assets/github.svg" />GitHub Repository
                 </button>
                 <button onclick="window.open('https://discord.gg/applemusic')" class="md-btn sponsorBtn discordBtn"><img
                             style="height: 26px;" src="./assets/discord.svg" />{{$root.getLz('term.discord')}}
