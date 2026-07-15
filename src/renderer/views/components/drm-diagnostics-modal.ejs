@@ -1,86 +1,74 @@
 <script type="text/x-template" id="drm-diagnostics-modal">
-    <div class="modal-fullscreen modal-generic" @click.self="close()" @contextmenu.self="close()">
-        <div class="modal-window drm-diagnostics-window" style="max-width: 650px; width: 90%; background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
-            <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
-                <div class="modal-title" style="font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center;">
-                    <div class="codicon codicon-warning" style="color: var(--keyColor); margin-right: 10px; font-size: 1.4rem;"></div>
-                    DRM & Playback Diagnostics
-                </div>
+    <div class="modal-fullscreen addtoplaylist-panel" @click.self="close()" @contextmenu.self="close()">
+        <div class="modal-window" style="max-width: 550px; width: 90%; background: #1e1e1e; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 16px 20px;">
+                <div class="modal-title" style="font-size: 1.15rem; font-weight: bold; color: #fff;">Playback & DRM Diagnostics</div>
                 <button class="close-btn" @click="close()" :aria-label="app.getLz('action.close')"></button>
             </div>
             
-            <div class="modal-content scrollbody" style="padding: 24px; max-height: 70vh; overflow-y: auto;">
+            <div class="modal-content scrollbody" style="padding: 16px; max-height: 65vh; overflow-y: auto;">
                 
                 <!-- Live Diagnostics Status Card -->
-                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-                    <h5 style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Auto-Detected Status</h5>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                        <!-- Connection Status -->
-                        <div style="display: flex; align-items: center;">
-                            <div :class="['codicon', status.online ? 'codicon-pass-filled' : 'codicon-error']" :style="{ color: status.online ? '#4caf50' : '#f44336', marginRight: '8px' }"></div>
-                            <span style="color: #eee; font-size: 0.9rem;">Network: {{ status.online ? 'Online' : 'Offline' }}</span>
-                        </div>
-                        
-                        <!-- AM Auth -->
-                        <div style="display: flex; align-items: center;">
-                            <div :class="['codicon', status.authorized ? 'codicon-pass-filled' : 'codicon-error']" :style="{ color: status.authorized ? '#4caf50' : '#f44336', marginRight: '8px' }"></div>
-                            <span style="color: #eee; font-size: 0.9rem;">Subscription: {{ status.authorized ? 'Active Session' : 'No Active Session' }}</span>
-                        </div>
-                        
-                        <!-- Country/IP -->
-                        <div style="display: flex; align-items: center;">
-                            <div class="codicon codicon-globe" style="color: var(--keyColor); margin-right: 8px;"></div>
-                            <span style="color: #eee; font-size: 0.9rem;">Region (IP): {{ status.country || 'Detecting...' }}</span>
-                        </div>
-
-                        <!-- Storefront -->
-                        <div style="display: flex; align-items: center;">
-                            <div class="codicon codicon-symbol-method" style="color: var(--keyColor); margin-right: 8px;"></div>
-                            <span style="color: #eee; font-size: 0.9rem;">Storefront: {{ status.storefront || 'Not Set' }}</span>
-                        </div>
+                <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 0.88rem;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="color: rgba(255,255,255,0.6)">Network Connection:</span>
+                        <strong :style="{color: status.online ? '#4caf50' : '#f44336'}">{{ status.online ? 'Online' : 'Offline' }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                        <span style="color: rgba(255,255,255,0.6)">Apple Music Session:</span>
+                        <strong :style="{color: status.authorized ? '#4caf50' : '#f44336'}">{{ status.authorized ? 'Active (Subscribed)' : 'No Active Session' }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: rgba(255,255,255,0.6)">Current Storefront:</span>
+                        <strong style="color: var(--keyColor)">{{ status.country }} ({{ status.storefront.toUpperCase() }})</strong>
                     </div>
                 </div>
 
-                <!-- Explanation Title -->
-                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
-                    DRM-protected tracks require GPU hardware decryption validation. Select a reason below to check troubleshooting steps:
-                </p>
+                <div style="margin-bottom: 12px; font-size: 0.95rem; font-weight: bold; color: rgba(255, 255, 255, 0.8);">
+                    Please select the playback issue to see the solution:
+                </div>
 
-                <!-- Reasons Interactive Accordion -->
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <div v-for="(reason, index) in reasons" :key="index" 
-                         @click="selectedReasonIndex = selectedReasonIndex === index ? null : index"
-                         style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px; cursor: pointer; transition: background 0.2s, border-color 0.2s;"
-                         :style="selectedReasonIndex === index ? { background: 'rgba(255, 255, 255, 0.06)', borderColor: 'var(--keyColor)' } : {}"
-                         class="reason-card">
-                        
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div style="display: flex; align-items: center;">
-                                <div :class="['codicon', reason.icon]" style="font-size: 1.2rem; color: var(--keyColor); margin-right: 12px;"></div>
-                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">{{ reason.title }}</div>
+                <!-- Selectable reasons using native playlist-item style -->
+                <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px;">
+                    <button v-for="(reason, index) in reasons" 
+                            :key="index"
+                            class="playlist-item" 
+                            @click="selectedReasonIndex = index"
+                            :style="selectedReasonIndex === index ? { borderLeft: '4px solid var(--keyColor)', background: 'rgba(255,255,255,0.08)' } : {}"
+                            style="width: 100%; text-align: left; display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border: none; border-radius: 6px; cursor: pointer; color: #fff;">
+                        <div style="display: flex; align-items: center;">
+                            <div class="icon" style="margin-right: 12px; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px;">
+                                <div :class="['codicon', reason.icon]" style="font-size: 1.2rem; color: var(--keyColor);"></div>
                             </div>
-                            <div :class="['codicon', selectedReasonIndex === index ? 'codicon-chevron-up' : 'codicon-chevron-down']" style="color: rgba(255,255,255,0.4);"></div>
+                            <div class="name" style="font-size: 0.95rem;">{{ reason.title }}</div>
                         </div>
+                        <div class="codicon codicon-chevron-right" style="color: rgba(255, 255, 255, 0.4);" v-if="selectedReasonIndex !== index"></div>
+                    </button>
+                </div>
 
-                        <!-- Dropdown Content -->
-                        <div v-if="selectedReasonIndex === index" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); font-size: 0.88rem; line-height: 1.6;">
-                            <p style="margin-bottom: 10px;">{{ reason.desc }}</p>
-                            <div style="background: rgba(250, 88, 106, 0.1); border-left: 3px solid var(--keyColor); padding: 8px 12px; border-radius: 4px; color: #ff8a9c;">
-                                <strong>💡 Solution:</strong> {{ reason.fix }}
-                            </div>
-                        </div>
+                <!-- Selected Reason Detailed Info Card -->
+                <div v-if="selectedReasonIndex !== null" 
+                     style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 14px; transition: all 0.2s;">
+                    <div style="font-weight: bold; color: #fff; margin-bottom: 8px; display: flex; align-items: center; font-size: 0.95rem;">
+                        <div :class="['codicon', reasons[selectedReasonIndex].icon]" style="margin-right: 8px; color: var(--keyColor)"></div>
+                        {{ reasons[selectedReasonIndex].title }}
+                    </div>
+                    <p style="font-size: 0.88rem; color: rgba(255, 255, 255, 0.75); line-height: 1.5; margin-bottom: 10px;">
+                        {{ reasons[selectedReasonIndex].desc }}
+                    </p>
+                    <div style="background: rgba(252, 60, 68, 0.1); border-left: 3px solid var(--keyColor); padding: 8px 12px; border-radius: 4px; color: #ff8a9c; font-size: 0.88rem; line-height: 1.4;">
+                        <strong>💡 Solution:</strong> {{ reasons[selectedReasonIndex].fix }}
                     </div>
                 </div>
 
             </div>
             
-            <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 16px 24px; display: flex; justify-content: flex-end; gap: 12px; background: rgba(0,0,0,0.15);">
-                <button class="md-btn" @click="reauthorize()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff;">
+            <div style="display: flex; justify-content: flex-end; gap: 10px; padding: 12px 20px; border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.1);">
+                <button class="md-btn" @click="reauthorize()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.88rem;">
                     Re-login Apple Music
                 </button>
-                <button class="md-btn md-btn-primary" @click="close()">
-                    Done / Close
+                <button class="md-btn" @click="close()" style="background: var(--keyColor); color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.88rem; font-weight: bold;">
+                    Close
                 </button>
             </div>
         </div>
@@ -97,8 +85,8 @@
         status: {
           online: navigator.onLine,
           authorized: false,
-          country: "",
-          storefront: ""
+          country: "India", // Default to India
+          storefront: "in"  // Default to India storefront
         },
         reasons: [
           {
@@ -149,7 +137,7 @@
         // Auth check
         try {
           this.status.authorized = MusicKit.getInstance().isAuthorized;
-          this.status.storefront = MusicKit.getInstance().storefrontId;
+          this.status.storefront = MusicKit.getInstance().storefrontId || "in";
         } catch(e){}
 
         // Country/IP auto detection
@@ -157,17 +145,18 @@
           const res = await fetch("https://ipapi.co/json/");
           const data = await res.json();
           if (data && data.country_name) {
-            this.status.country = `${data.country_name} (${data.country_code})`;
+            this.status.country = data.country_name;
+            this.status.storefront = data.country_code ? data.country_code.toLowerCase() : "in";
             
             // Automatically expand Region/Storefront reason if IP region doesn't match storefront
             if (this.status.storefront && data.country_code && this.status.storefront.toUpperCase() !== data.country_code.toUpperCase()) {
               this.selectedReasonIndex = 2; // Auto-select Storefront Region Mismatch
             }
-          } else {
-            this.status.country = "Failed to detect";
           }
         } catch(e) {
-          this.status.country = "Offline / API blocked";
+          // Fallback to defaults
+          this.status.country = "India";
+          this.status.storefront = "in";
         }
       }
     }
