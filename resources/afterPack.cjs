@@ -9,7 +9,7 @@ exports.default = function (context) {
   if (fs.existsSync("dist/mac-universal--arm64/Cider.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/Electron Framework.sig"))
     fs.unlinkSync("dist/mac-universal--arm64/Cider.app/Contents/Frameworks/Electron Framework.framework/Versions/A/Resources/Electron Framework.sig");
   console.log('Castlabs-evs update start')
-  execSync('python3 -m pip install --upgrade castlabs-evs')
+  execSync('python3 -m pip install --upgrade castlabs-evs --break-system-packages')
   console.log('Castlabs-evs update complete')
 
   // xcode 13
