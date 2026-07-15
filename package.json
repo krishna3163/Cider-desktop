@@ -17,7 +17,7 @@
   "buildResources": "resources",
   "scripts": {
     "bootstrap": "npx -y check-engine && yarn",
-    "build": "tsc && lessc ./src/renderer/style.less ./src/renderer/style.css",
+    "build": "tsc && node ./compile-less.js",
     "start": "npm run build && electron ./build/index.js",
     "dist": "npm run build && electron-builder --publish=never",
     "dist:win": "npm run build && electron-builder --win --publish=never",

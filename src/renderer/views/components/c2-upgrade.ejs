@@ -7,7 +7,7 @@
     @contextmenu.self="closePromo">
     <div class="modal-window">
       <div class="modal-header">
-        <div class="modal-title">Cider 2 Free Upgrade — Last Call!</div>
+        <div class="modal-title">Cider Update Available — GitHub</div>
         <button
           class="close-btn"
           @click="closePromo"
@@ -22,18 +22,11 @@
         <p
           class="p-3"
           style="font-size: 14px">
-          Earlier this year, we released Cider 2, a complete rewrite of Cider.
-          <br />Cider 2 is a paid upgrade, but we're offering it <b>for free</b> to Cider users who have purchased Cider 1.
+          A new version or update for Cider might be available on GitHub.
+          <br />Download the latest development builds, bug-fixes, and optimization updates directly from the official GitHub Releases page.
           <br />
           <br />
-          Download Cider 2 from the Microsoft Store today!
-          <br />
-
-          <br />
-          <b>This limited offer is valid until June 4th, 2023.</b>
-          <br />
-          <br />
-          <i>Upon opening the website, please click "Get in Store app" to continue.</i>
+          <b>Always download the latest version for the best experience!</b>
           <br />
           <br />
           <label>
@@ -50,7 +43,7 @@
                 type="checkbox"
                 style="accent-color: var(--keyColor)"
                 v-model="removeItemFromMainMenu" />
-              Remove upgrade button from Quick Navigation/Main Menu
+              Remove update button from Quick Navigation/Main Menu
             </label>
           </template>
         </p>
@@ -60,9 +53,9 @@
         style="padding: 12px">
         <button
           class="btn btn-primary"
-          @click="openStore"
+          @click="openGitHub"
           style="width: 100%">
-          Open in Microsoft Store
+          Update from GitHub
         </button>
         <button
           class="btn btn-secondary"
@@ -98,8 +91,8 @@
         }
         localStorage.setItem("seenC2Upgrade", true);
       },
-      openStore() {
-        window.open("https://www.microsoft.com/store/productId/9PL8WPH0QK9M");
+      openGitHub() {
+        window.open("https://github.com/krishna3163/Cider-desktop/releases/latest");
       },
     },
   });

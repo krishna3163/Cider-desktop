@@ -324,21 +324,64 @@ const app = new Vue({
           app.cfg.musickit["stored-attributes"][attr] = val;
         });
       }
-      const ERROR_CODES = ["drmUnsupported", "mediaPlaybackError"];
-      /* MusicKit.Events */
-      ERROR_CODES.forEach((code) => {
-        MusicKit.getInstance().addEventListener(MusicKit.Events[code], (e) => {
-          console.error(`[MusicKit] MusicKit Error ${code}`);
-          console.error({ e: e });
-          app.notyf.open({
-            duration: 20000,
-            type: "error",
-            className: "notyf-info",
-            message: `<small>${app.getLz("error.musickitError")} \n</small><code>${code.toUpperCase()}</code>`,
-          });
-          // Show the DRM Diagnostics Modal to assist the user
-          app.modals.drmDiagnostics = true;
+
+      // DRM auto-recovery: track consecutive failures
+      let drmFailCount = 0;
+      let lastDrmFailTime = 0;
+
+      /* MusicKit.Events - DRM Unsupported Auto-Recovery */
+      MusicKit.getInstance().addEventListener(MusicKit.Events.drmUnsupported, async (e) => {
+        const now = Date.now();
+        console.warn(`[MusicKit][DRM-Fix] drmUnsupported error caught. Attempting auto-recovery...`);
+        console.warn({ e: e });
+
+        // Reset failure counter if last failure was more than 30 seconds ago
+        if (now - lastDrmFailTime > 30000) {
+          drmFailCount = 0;
+        }
+        drmFailCount++;
+        lastDrmFailTime = now;
+
+        // Show brief non-blocking toast
+        app.notyf.open({
+          duration: 4000,
+          type: "warning",
+          className: "notyf-info",
+          message: `<small>DRM track skipped — auto-recovering playback...</small>`,
         });
+
+        // Auto-skip to the next track in queue
+        try {
+          if (app.mk.queue && app.mk.queue.nextPlayableItemIndex != null && app.mk.queue.nextPlayableItemIndex !== -1) {
+            console.log(`[MusicKit][DRM-Fix] Skipping to next track (index: ${app.mk.queue.nextPlayableItemIndex})`);
+            await app.mk.changeToMediaAtIndex(app.mk.queue.nextPlayableItemIndex);
+          } else {
+            console.log(`[MusicKit][DRM-Fix] No next track in queue. Stopping playback.`);
+            await app.mk.stop();
+          }
+        } catch (skipErr) {
+          console.error(`[MusicKit][DRM-Fix] Failed to skip track:`, skipErr);
+        }
+
+        // Only show diagnostics modal if 3+ consecutive DRM failures
+        if (drmFailCount >= 3) {
+          console.warn(`[MusicKit][DRM-Fix] ${drmFailCount} consecutive DRM failures. Showing diagnostics.`);
+          app.modals.drmDiagnostics = true;
+          drmFailCount = 0;
+        }
+      });
+
+      /* MusicKit.Events - Media Playback Error */
+      MusicKit.getInstance().addEventListener(MusicKit.Events.mediaPlaybackError, (e) => {
+        console.error(`[MusicKit] MusicKit Error mediaPlaybackError`);
+        console.error({ e: e });
+        app.notyf.open({
+          duration: 20000,
+          type: "error",
+          className: "notyf-info",
+          message: `<small>${app.getLz("error.musickitError")} \n</small><code>MEDIAPLAYBACKERROR</code>`,
+        });
+        app.modals.drmDiagnostics = true;
       });
     },
     async oobeInit() {
@@ -3926,7 +3969,13 @@ const app = new Vue({
       }
     },
     playMediaItemById(id, kind, isLibrary, raurl = "") {
-      let truekind = !kind.endsWith("s") ? kind + "s" : kind;
+      // Fix: podcast-episodes is already plural-like; avoid double-s bug ("podcast-episodess")
+      let truekind;
+      if (kind === "podcast-episodes" || id.toString().startsWith("ciderlocal")) {
+        truekind = "episodes";
+      } else {
+        truekind = !kind.endsWith("s") ? kind + "s" : kind;
+      }
       console.debug(id, truekind, isLibrary);
       try {
         if (truekind.includes("artist")) {
@@ -3937,6 +3986,20 @@ const app = new Vue({
           this.mk.setStationQueue({ url: raurl }).then(function (queue) {
             MusicKit.getInstance().play();
           });
+        } else if (id.toString().startsWith("ciderlocal")) {
+          // Local file: find the full item and set queue with MediaItem to prevent mid-song start
+          const localItem = app.library.localsongs.find((s) => s.id === id);
+          if (localItem) {
+            const mediaItem = new MusicKit.MediaItem(localItem);
+            app.mk.stop().then(() => {
+              app.mk.setQueue({ items: [mediaItem] }).then(() => {
+                setTimeout(() => {
+                  app.mk.seekToTime(0).catch(() => {});
+                  app.mk.play();
+                }, 150);
+              });
+            });
+          }
         } else {
           this.mk
             .setQueue({
@@ -3970,12 +4033,26 @@ const app = new Vue({
 
       try {
         if (parent == "playlist:ciderlocal") {
-          let u = app.library.localsongs.map((i) => {
-            return i.id;
-          });
-          app.mk.setQueue({ episodes: u }).then(() => {
-            let id = app.mk.queue._itemIDs.findIndex((element) => element == item.id);
-            app.mk.changeToMediaAtIndex(id);
+          // Build proper MusicKit.MediaItem objects to prevent skip/mid-song/infinite-loading bugs
+          let mediaItems = app.library.localsongs.map((i) => new MusicKit.MediaItem(i));
+          if (app.mk.shuffleMode == 1) {
+            shuffleArray(mediaItems);
+          }
+          app.mk.stop().then(() => {
+            app.mk.setQueue({ items: mediaItems }).then(() => {
+              // Find the target item index after queue is fully built
+              const targetIndex = app.mk.queue._itemIDs.findIndex(
+                (element) => element == item.id
+              );
+              const goToIndex = targetIndex >= 0 ? targetIndex : 0;
+              // Use setTimeout to let MusicKit finish indexing before seeking
+              setTimeout(() => {
+                app.mk.changeToMediaAtIndex(goToIndex).then(() => {
+                  app.mk.seekToTime(0).catch(() => {});
+                  app.mk.play();
+                });
+              }, 150);
+            });
           });
         } else if (app.library.songs.displayListing.length > childIndex && parent == "librarysongs") {
           console.log(item);

@@ -108,6 +108,13 @@
                                         @click="app.mk.shuffleMode = 1;play()"><img class="md-ico-shuffle">
                                     {{app.getLz('term.shuffle')}}
                                 </button>
+                                <button class="md-btn md-btn-icon" style="min-width: 150px;"
+                                        v-if="data.id == 'ciderlocal'"
+                                        :style="{'background': '#' +hasHeroObject()?.textColor4 ?? '','border-top': '#' +hasHeroObject()?.textColor3 ?? '','border': '#' +hasHeroObject()?.textColor2 ?? ''}"
+                                        @click="app.ipcRenderer.invoke('scanLibrary'); notyf.success('Syncing local folders...');"
+                                        style="display: inline-flex; align-items: center; justify-content: center;">
+                                    <div class="codicon codicon-sync" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></div> Sync Folders
+                                </button>
                                 <button class="md-btn md-btn-icon" style="min-width: 180px;"
                                         v-if="inLibrary!=null && confirm!=true"
                                         @click="confirmButton()"><img
@@ -160,14 +167,6 @@
                         <div class='codicon codicon-check'></div> {{$root.getLz("action.done")}}
                     </span>
                 </button>
-                <button class="md-btn md-btn-small syncTracksBtn"
-                        v-if="data.id == 'ciderlocal'"
-                        @click="app.ipcRenderer.invoke('scanLibrary'); notyf.success('Syncing local folders...');"
-                        style="margin-left: 10px; display: inline-flex; align-items: center; justify-content: center;">
-                    <span>
-                        <div class='codicon codicon-sync' style='display: inline-block; vertical-align: middle; margin-right: 4px;'></div> Sync Folders
-                    </span>
-                </button>
             </div>
             <div class="floating-header"
                  :style="{opacity: (headerVisible ? 0 : 1),'pointer-events': (headerVisible ? 'none' : '')}">
@@ -185,6 +184,12 @@
                             <button class="md-btn md-btn-primary  md-btn-icon" style="min-width: 100px;"
                                     @click="app.mk.shuffleMode = 1;play()"><img class="md-ico-shuffle">
                                 {{app.getLz('term.shuffle')}}
+                            </button>
+                            <button class="md-btn md-btn-icon" style="min-width: 150px;"
+                                    v-if="data.id == 'ciderlocal'"
+                                    @click="app.ipcRenderer.invoke('scanLibrary'); notyf.success('Syncing local folders...');"
+                                    style="display: inline-flex; align-items: center; justify-content: center;">
+                                <div class="codicon codicon-sync" style="display: inline-block; vertical-align: middle; margin-right: 4px;"></div> Sync Folders
                             </button>
                             <button class="md-btn md-btn-icon" style="min-width: 180px;"
                                     v-if="inLibrary!=null && confirm!=true"
@@ -903,9 +908,8 @@
         }
 
         const id = this.data.attributes.playParams?.id ?? this.data.id;
-        //console.log("1")
-        const kind = this.data.attributes.playParams?.kind ?? this.data.type ?? '';
-        //console.log("1")
+        // Fix: use let so kind can be reassigned for podcast-episodes
+        let kind = this.data.attributes.playParams?.kind ?? this.data.type ?? '';
         if (kind == "podcast-episodes") {
           kind = "episode"
         }
@@ -927,20 +931,24 @@
               })
             })
           } else {
-            let u = app.library.localsongs.map(i => {
-              return i.id
-            })
+            // Fix: build MediaItem objects for local files so MusicKit can properly index them
+            let mediaItems = app.library.localsongs.map(i => new MusicKit.MediaItem(i));
             if (app.mk.shuffleMode == 1) {
-              shuffleArray(u)
+              shuffleArray(mediaItems);
             }
-            app.mk.setQueue({ "episodes": u }).then(() => {
-              app.mk.play()
-            })
+            app.mk.setQueue({ items: mediaItems }).then(() => {
+              // Buffer: let MusicKit finish indexing all items before attempting playback
+              setTimeout(() => {
+                app.mk.seekToTime(0).catch(() => {});
+                app.mk.play();
+              }, 150);
+            });
           }
         })
 
 
       },
+
       navClass(data) {
         if (data && typeof data.views != "undefined") return "";
         return "d-none";

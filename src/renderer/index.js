@@ -114,7 +114,26 @@ document.addEventListener("musickitloaded", function () {
   capiInit();
 });
 window.addEventListener("drmUnsupported", function () {
-  initMusicKit();
+  console.warn("[Cider][DRM-Fix] drmUnsupported window event fired.");
+  // Check if EME (Encrypted Media Extensions) is available
+  if (typeof navigator.requestMediaKeySystemAccess === "function") {
+    console.log("[Cider][DRM-Fix] EME API is available. Widevine should be supported.");
+    // Try requesting Widevine access to verify
+    navigator.requestMediaKeySystemAccess("com.widevine.alpha", [{
+      initDataTypes: ["cenc"],
+      audioCapabilities: [{ contentType: 'audio/mp4; codecs="mp4a.40.2"' }],
+      distinctiveIdentifier: "optional",
+      persistentState: "optional",
+    }]).then(function(access) {
+      console.log("[Cider][DRM-Fix] Widevine access granted:", access.keySystem);
+    }).catch(function(err) {
+      console.error("[Cider][DRM-Fix] Widevine access DENIED:", err.message);
+      console.warn("[Cider][DRM-Fix] Your system may not support hardware DRM decryption. Some tracks may only play 30-second previews.");
+    });
+  } else {
+    console.error("[Cider][DRM-Fix] EME API is NOT available in this browser context. DRM playback is impossible.");
+  }
+  // Do NOT reinitialize MusicKit here - the vueapp.js monitorMusickit handler will auto-skip
 });
 if ("serviceWorker" in navigator) {
   // Use the window load event to keep the page load performant

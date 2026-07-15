@@ -16,6 +16,12 @@ import { pipeline } from "stream/promises";
 const appName = "sh.cider.classic";
 app.commandLine.appendSwitch("no-verify-widevine-cdm");
 
+// Force EME/DRM compatibility for all GPU types (including Intel HD 510 and other integrated GPUs)
+app.commandLine.appendSwitch("enable-features", "EncryptedMediaHardwareDecrypt,PlatformEncryptedDolbyVision");
+app.commandLine.appendSwitch("disable-features", "HardwareMediaKeyHandling");
+app.commandLine.appendSwitch("ignore-certificate-errors");
+app.commandLine.appendSwitch("allow-running-insecure-content");
+
 if (!app.isPackaged) {
   app.setPath("userData", join(app.getPath("appData"), `${appName}.dev`));
 } else {
