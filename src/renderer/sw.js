@@ -7,8 +7,8 @@ if (!self.define) {
       new Promise((i) => {
         if ("document" in self) {
           const e = document.createElement("script");
-          (e.src = s), (e.onload = i), document.head.appendChild(e);
-        } else (e = s), importScripts(s), i();
+          ((e.src = s), (e.onload = i), document.head.appendChild(e));
+        } else ((e = s), importScripts(s), i());
       }).then(() => {
         let e = i[s];
         if (!e) throw new Error(`Module ${s} didn’t register its module`);
@@ -26,7 +26,7 @@ if (!self.define) {
 }
 define(["./workbox-962786f2"], function (e) {
   "use strict";
-  self.addEventListener("message", (e) => {
+  (self.addEventListener("message", (e) => {
     e.data && "SKIP_WAITING" === e.data.type && self.skipWaiting();
   }),
     e.precacheAndRoute(
@@ -63,6 +63,6 @@ define(["./workbox-962786f2"], function (e) {
     ),
     e.registerRoute(/\.(?:png|jpg|jpeg|svg|webp)$/, new e.CacheFirst({ cacheName: "imageinternet", plugins: [] }), "GET"),
     e.registerRoute(/https:\/\/is[0-9]-ssl\.mzstatic\.com\/image+/, new e.CacheFirst(), "GET"),
-    e.registerRoute(/^https:\/\/store-\d{3}\.blobstore\.apple\.com\/.{65}\/image+/, new e.CacheFirst(), "GET");
+    e.registerRoute(/^https:\/\/store-\d{3}\.blobstore\.apple\.com\/.{65}\/image+/, new e.CacheFirst(), "GET"));
 });
 //# sourceMappingURL=sw.js.map

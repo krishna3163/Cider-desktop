@@ -9,13 +9,13 @@ import { Plugins } from "./base/plugins.js";
 import { BrowserWindow } from "./base/browserwindow.js";
 import { utils } from "./base/utils.js";
 
-const appName = 'sh.cider.classic';
+const appName = "sh.cider.classic";
 app.commandLine.appendSwitch("no-verify-widevine-cdm");
 
 if (!app.isPackaged) {
-  app.setPath('userData', join(app.getPath('appData'), `${appName}.dev`));
+  app.setPath("userData", join(app.getPath("appData"), `${appName}.dev`));
 } else {
-  app.setPath('userData', join(app.getPath('appData'), appName));
+  app.setPath("userData", join(app.getPath("appData"), appName));
 }
 
 // Analytics for debugging - wrapped in try/catch to prevent crash if Sentry fails
@@ -47,9 +47,12 @@ async function createAppWindow() {
   console.log("[Cider] Creating Window.");
   const win = await bw.createWindow();
 
-  app.getGPUInfo("complete").then((gpuInfo) => {
-    console.log(gpuInfo);
-  }).catch(() => {});
+  app
+    .getGPUInfo("complete")
+    .then((gpuInfo) => {
+      console.log(gpuInfo);
+    })
+    .catch(() => {});
 
   console.log("[Cider][Widevine] Status:", components.status());
   Cider.bwCreated();
@@ -118,4 +121,3 @@ app.on("before-quit", () => {
   CiderPlug.callPlugins("onBeforeQuit");
   console.warn(`${app.getName()} exited.`);
 });
-

@@ -238,7 +238,6 @@ export class Store {
   };
   private migrations = {};
 
-
   constructor() {
     Store.cfg = new ElectronStore({
       name: "cider-config",

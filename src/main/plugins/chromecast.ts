@@ -1,6 +1,6 @@
 import electron from "electron";
 import os from "os";
-import {CiderReceiver} from "../base/castreceiver.js";
+import { CiderReceiver } from "../base/castreceiver.js";
 import MediaRendererClient from "upnp-mediarenderer-client";
 import request from "request";
 import castv2 from "castv2-client";

@@ -2,8 +2,6 @@
 import castv2Cli from "castv2-client";
 const RequestResponseController = castv2Cli.RequestResponseController;
 
-
-
 export class CiderCastController extends RequestResponseController {
   constructor(client: string, sourceId: string, destinationId: string) {
     super(client, sourceId, destinationId, "urn:x-cast:com.ciderapp.customdata");
