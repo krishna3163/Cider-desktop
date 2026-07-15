@@ -41,6 +41,7 @@ jobs:
           files: |
             dist/Cider-Setup-*.exe
             dist/Cider-Setup-*.exe.blockmap
+            dist/*.zip
           draft: false
           prerelease: false
         env:

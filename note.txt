@@ -1,0 +1,68 @@
+========================================================================
+             CIDER CLASSIC - DEVELOPMENT BUILD RELEASE NOTE
+                     Version: v0.0.1-dev (Windows x64)
+========================================================================
+
+Welcome to the Cider Classic Development Release. This release contains 
+critical platform fixes, CPU performance optimizations, butter-smooth 
+GPU compositing, and dynamic playback diagnostics tools.
+
+------------------------------------------------------------------------
+1. WHAT WE IMPROVED & FIXED
+------------------------------------------------------------------------
+* Widevine DRM / 30-Second Skip Fix: Enabled forced Hardware Acceleration
+  on Windows to allow Chromium Widevine/FairPlay DRM validation. Catalog
+  tracks now play completely without falling back to audio previews.
+* Instant Local Library Load: Implemented a Stale-While-Revalidate JSON
+  metadata caching layer, allowing local songs to load immediately on boot.
+* Stutter & CPU Spike Elimination: Increased the V8 heap space threshold
+  from 350MB to 1024MB, preventing continuous garbage collector execution 
+  from freezing the UI thread.
+* GPU Compositor Promotion: Integrated layout will-change properties to 
+  promote all animation-heavy layers directly to GPU composition.
+* Storefront Region Verifier: Deployed an automated diagnostic checks
+  modal mapping storefront IDs to public IP coordinates to find region locks.
+* Modern ToastGeneric Notifications: Upgraded now playing toasts to
+  use circle-cropped logo layouts with XML-safe formatting protection.
+* Safe App Initialization: Resolved uncaught Sentry RewriteFrames, DevTools,
+  and null-pointer playParams crashes.
+
+------------------------------------------------------------------------
+2. SYSTEM FILE STRUCTURE
+------------------------------------------------------------------------
+* src/main/base/app.ts
+  Manages Electron's base lifecycle, handles scaling, V8 arguments, 
+  and overrides Hardware Acceleration logic on Windows platforms.
+* src/main/base/browserwindow.ts
+  Creates the core BrowserWindow, loads layout environment variables, 
+  binds local file servers, and handles IPC command-line channel routing.
+* src/main/providers/local/index.ts
+  Performs recursive local directory scans, extracts metadata via 
+  music-metadata, and manages the JSON cache write pipeline.
+* src/main/plugins/playbackNotifications.ts
+  Composes and publishes native Windows ToastGeneric now playing cards.
+* src/renderer/main/vueapp.js
+  Hosts the main Vue controller, binds player events, and manages the
+  in-app modal state bindings.
+* src/renderer/views/components/drm-diagnostics-modal.ejs
+  HTML template for the diagnostics checking and troubleshooting overlay.
+
+------------------------------------------------------------------------
+3. WORKING PRINCIPLES OF KEY SYSTEMS
+------------------------------------------------------------------------
+* GPU-Accelerated DRM:
+  Widevine DRM requires verified secure GPU validation paths. When hardware
+  acceleration is disabled, Chromium falls back to SwiftShader (software),
+  which lacks secure validation endpoints. We override this setting on Windows,
+  ensuring key servers validate streams successfully.
+* Metadata Caching:
+  On boot, Cider loads locally cached lists from `%appdata%/Cider/CiderCache`.
+  A background thread asynchronously re-scans specified folders, writing 
+  diff updates only when changes are found.
+* Storefront Verification:
+  If a DRM playback issue is caught, the player calls the storefront API 
+  and matches it against geographic country codes from public geoloation 
+  endpoints to find storefront configuration issues.
+
+Enjoy a faster, smoother, and completely unrestricted music experience!
+========================================================================
