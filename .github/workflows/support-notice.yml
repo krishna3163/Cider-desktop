@@ -1,0 +1,18 @@
+name: Support Notice
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  post-notice:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: derekprior/add-autoresponse@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          respondableId: ${{ github.event.issue.node_id }}
+          response: "Cider 1.x is no longer actively maintained. We highly suggest moving to the newer version versions of the app available at https://cider.sh through official storefronts ex. Itch.io, or the Microsoft Store."
+          author: ${{ github.event.issue.user.login }}

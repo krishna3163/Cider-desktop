@@ -1,0 +1,123 @@
+<script type="text/x-template" id="cider-library-albums">
+    <div class="content-inner">
+        <div class="row">
+            <div class="col" style="padding:0;">
+                <h1 class="header-text">{{$root.getLz('term.albums')}}</h1>
+            </div>
+            <div class="col-auto">
+                <button v-if="library.albums.downloadState == 2" @click="$root.getLibraryAlbumsFull(true, 1)"
+                        class="reload-btn"
+                        :aria-label="app.getLz('menubar.options.reload')"><%- include('../svg/redo.svg') %></button>
+            </div>
+        </div>
+        <div class="album-header">
+            <div class="col" style="padding:0;">
+                <div class="search-input-container" style="width:100%;margin: 16px 0;">
+                    <div class="search-input--icon"></div>
+                    <input type="search"
+                           style="width:100%;"
+                           spellcheck="false"
+                           :placeholder="$root.getLz('term.search') + '...'"
+                           @input="$root.searchLibraryAlbums"
+                           v-model="library.albums.search" class="search-input">
+                </div>
+            </div>
+            <div class="col-auto cider-flex-center">
+                <div class="row">
+                    <div class="col">
+                        <select class="md-select" v-model="prefs.sort"
+                                @change="library.albums.sorting[1] = prefs.sort; $root.searchLibraryAlbums(1)">
+                            <optgroup :label="$root.getLz('term.sortBy')">
+                                <option v-for="(sort, index) in library.albums.sortingOptions" :value="index">{{ sort
+                                    }}
+                                </option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="md-select" v-model="prefs.sortOrder"
+                                @change="library.albums.sortOrder[1] = prefs.sortOrder; $root.searchLibraryAlbums(1)">
+                            <optgroup :label="$root.getLz('term.sortOrder')">
+                                <option value="asc">{{$root.getLz('term.sortOrder.ascending')}}</option>
+                                <option value="desc">{{$root.getLz('term.sortOrder.descending')}}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="md-select" v-model="prefs.viewAs">
+                            <optgroup :label="$root.getLz('term.viewAs')">
+                                <option value="covers">{{$root.getLz('term.viewAs.coverArt')}}</option>
+                                <option value="list">{{$root.getLz('term.viewAs.list')}}</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <select class="md-select" v-model="prefs.scroll">
+                            <optgroup :label="app.getLz('term.scroll')">
+                                <option value="infinite">{{app.getLz('term.scroll.infinite')}}</option>
+                                <option value="paged">{{app.getLz('term.scroll.paged').replace("${songsPerPage}",
+                                    pageSize)}}
+                                </option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <pagination
+              :length="app.library.albums.displayListing.length"
+              :pageSize="pageSize"
+              :scroll="prefs.scroll"
+              scrollSelector="#app-content"
+              @onRangeChange="onRangeChange"
+              style="margin-bottom: 0;"
+            />
+        </div>
+        <div class="well">
+            <div class="albums-square-container">
+                <div>
+                    <mediaitem-square v-if="prefs.viewAs == 'covers'" :size="'300'" :item="item"
+                                      v-for="item in currentSlice">
+                    </mediaitem-square>
+                </div>
+            </div>
+            <mediaitem-list-item v-if="prefs.viewAs == 'list'" :show-duration="false" :show-meta-data="true"
+                                 :show-library-status="false" v-bind:key="item.id" :item="item" v-for="item in currentSlice">
+            </mediaitem-list-item>
+        </div>
+    </div>
+</script>
+<script>
+  Vue.component('cider-library-albums', {
+    template: '#cider-library-albums',
+    data: function() {
+      const pageSize = this.$root.cfg.libraryPrefs.pageSize;
+      return {
+        library: this.$root.library,
+        mediaItemSize: "compact",
+        prefs: this.$root.cfg.libraryPrefs.albums,
+        app: this.$root,
+        pageSize: pageSize,
+        start: 0,
+        end: pageSize
+      }
+    },
+    mounted() {
+      this.$root.getLibraryAlbumsFull(null, 1);
+      this.$root.getAlbumSort();
+      this.$root.searchLibraryAlbums(1);
+      this.$root.getLibrarySongsFull();
+      this.$root.searchLibraryAlbums(1);
+    },
+    computed: {
+      currentSlice: function() {
+        return this.library.albums.displayListing.slice(this.start, this.end);
+      }
+    },
+    methods: {
+      onRangeChange: function(newRange) {
+        this.start = newRange[0];
+        this.end = newRange[1];
+      }
+    }
+  });
+</script>

@@ -1,0 +1,175 @@
+<script type="text/x-template" id="drm-diagnostics-modal">
+    <div class="modal-fullscreen modal-generic" @click.self="close()" @contextmenu.self="close()">
+        <div class="modal-window drm-diagnostics-window" style="max-width: 650px; width: 90%; background: rgba(30, 30, 30, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5);">
+            <div class="modal-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;">
+                <div class="modal-title" style="font-size: 1.25rem; font-weight: 700; color: #fff; display: flex; align-items: center;">
+                    <div class="codicon codicon-warning" style="color: var(--keyColor); margin-right: 10px; font-size: 1.4rem;"></div>
+                    DRM & Playback Diagnostics
+                </div>
+                <button class="close-btn" @click="close()" :aria-label="app.getLz('action.close')"></button>
+            </div>
+            
+            <div class="modal-content scrollbody" style="padding: 24px; max-height: 70vh; overflow-y: auto;">
+                
+                <!-- Live Diagnostics Status Card -->
+                <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
+                    <h5 style="color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.05em;">Auto-Detected Status</h5>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                        <!-- Connection Status -->
+                        <div style="display: flex; align-items: center;">
+                            <div :class="['codicon', status.online ? 'codicon-pass-filled' : 'codicon-error']" :style="{ color: status.online ? '#4caf50' : '#f44336', marginRight: '8px' }"></div>
+                            <span style="color: #eee; font-size: 0.9rem;">Network: {{ status.online ? 'Online' : 'Offline' }}</span>
+                        </div>
+                        
+                        <!-- AM Auth -->
+                        <div style="display: flex; align-items: center;">
+                            <div :class="['codicon', status.authorized ? 'codicon-pass-filled' : 'codicon-error']" :style="{ color: status.authorized ? '#4caf50' : '#f44336', marginRight: '8px' }"></div>
+                            <span style="color: #eee; font-size: 0.9rem;">Subscription: {{ status.authorized ? 'Active Session' : 'No Active Session' }}</span>
+                        </div>
+                        
+                        <!-- Country/IP -->
+                        <div style="display: flex; align-items: center;">
+                            <div class="codicon codicon-globe" style="color: var(--keyColor); margin-right: 8px;"></div>
+                            <span style="color: #eee; font-size: 0.9rem;">Region (IP): {{ status.country || 'Detecting...' }}</span>
+                        </div>
+
+                        <!-- Storefront -->
+                        <div style="display: flex; align-items: center;">
+                            <div class="codicon codicon-symbol-method" style="color: var(--keyColor); margin-right: 8px;"></div>
+                            <span style="color: #eee; font-size: 0.9rem;">Storefront: {{ status.storefront || 'Not Set' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Explanation Title -->
+                <p style="color: rgba(255,255,255,0.6); font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
+                    DRM-protected tracks require GPU hardware decryption validation. Select a reason below to check troubleshooting steps:
+                </p>
+
+                <!-- Reasons Interactive Accordion -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <div v-for="(reason, index) in reasons" :key="index" 
+                         @click="selectedReasonIndex = selectedReasonIndex === index ? null : index"
+                         style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 16px; cursor: pointer; transition: background 0.2s, border-color 0.2s;"
+                         :style="selectedReasonIndex === index ? { background: 'rgba(255, 255, 255, 0.06)', borderColor: 'var(--keyColor)' } : {}"
+                         class="reason-card">
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="display: flex; align-items: center;">
+                                <div :class="['codicon', reason.icon]" style="font-size: 1.2rem; color: var(--keyColor); margin-right: 12px;"></div>
+                                <div style="font-weight: 600; color: #fff; font-size: 0.95rem;">{{ reason.title }}</div>
+                            </div>
+                            <div :class="['codicon', selectedReasonIndex === index ? 'codicon-chevron-up' : 'codicon-chevron-down']" style="color: rgba(255,255,255,0.4);"></div>
+                        </div>
+
+                        <!-- Dropdown Content -->
+                        <div v-if="selectedReasonIndex === index" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.8); font-size: 0.88rem; line-height: 1.6;">
+                            <p style="margin-bottom: 10px;">{{ reason.desc }}</p>
+                            <div style="background: rgba(250, 88, 106, 0.1); border-left: 3px solid var(--keyColor); padding: 8px 12px; border-radius: 4px; color: #ff8a9c;">
+                                <strong>💡 Solution:</strong> {{ reason.fix }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="modal-footer" style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding: 16px 24px; display: flex; justify-content: flex-end; gap: 12px; background: rgba(0,0,0,0.15);">
+                <button class="md-btn" @click="reauthorize()" style="background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff;">
+                    Re-login Apple Music
+                </button>
+                <button class="md-btn md-btn-primary" @click="close()">
+                    Done / Close
+                </button>
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+  Vue.component('drm-diagnostics-modal', {
+    template: '#drm-diagnostics-modal',
+    data: function() {
+      return {
+        app: this.$root,
+        selectedReasonIndex: 0,
+        status: {
+          online: navigator.onLine,
+          authorized: false,
+          country: "",
+          storefront: ""
+        },
+        reasons: [
+          {
+            title: "Track is DRM-Protected",
+            icon: "codicon-lock",
+            desc: "Some catalog tracks require GPU hardware decryption validation (FairPlay/Widevine). Software rendering (SwiftShader) is unsupported and blocks DRM streams, playing only 30-second previews.",
+            fix: "Keep Hardware Acceleration enabled in Cider visual settings. We have forced this enabled on Windows to protect DRM playback."
+          },
+          {
+            title: "Apple Music Subscription Inactive",
+            icon: "codicon-person-filled",
+            desc: "An active subscription is strictly required to stream full songs. If your account is in preview mode, or has lapsed, Apple Music restricts playback to 30-second previews.",
+            fix: "Verify your subscription is active at music.apple.com or try re-logging in using the button below."
+          },
+          {
+            title: "Storefront Region Mismatch",
+            icon: "codicon-globe",
+            desc: "Tracks can be restricted in certain countries, or your current Apple Music storefront region doesn't match the track's country code in the playlist.",
+            fix: "Change your storefront region in your Apple Music account settings or use tracks available in your local storefront."
+          },
+          {
+            title: "Downloader Processing Failures",
+            icon: "codicon-cloud-download",
+            desc: "Third party track/album downloaders sometimes strip the DRM-headers or save corrupted cache files, triggering verification errors on player side.",
+            fix: "Try clearing your Cider cache under settings or re-adding the track to your library."
+          },
+          {
+            title: "Outdated Client / MusicKit Server Changes",
+            icon: "codicon-git-compare",
+            desc: "Apple occasionally changes security headers on their DRM key servers, causing older client wrappers to fail authentication temporarily.",
+            fix: "Always update Cider to the latest stable build to stay compatible with Apple Music's backend changes."
+          }
+        ]
+      }
+    },
+    mounted() {
+      this.runStatusCheck();
+    },
+    methods: {
+      close() {
+        this.$root.modals.drmDiagnostics = false;
+      },
+      async reauthorize() {
+        this.close();
+        this.$root.appMode = "oobe";
+      },
+      async runStatusCheck() {
+        // Auth check
+        try {
+          this.status.authorized = MusicKit.getInstance().isAuthorized;
+          this.status.storefront = MusicKit.getInstance().storefrontId;
+        } catch(e){}
+
+        // Country/IP auto detection
+        try {
+          const res = await fetch("https://ipapi.co/json/");
+          const data = await res.json();
+          if (data && data.country_name) {
+            this.status.country = `${data.country_name} (${data.country_code})`;
+            
+            // Automatically expand Region/Storefront reason if IP region doesn't match storefront
+            if (this.status.storefront && data.country_code && this.status.storefront.toUpperCase() !== data.country_code.toUpperCase()) {
+              this.selectedReasonIndex = 2; // Auto-select Storefront Region Mismatch
+            }
+          } else {
+            this.status.country = "Failed to detect";
+          }
+        } catch(e) {
+          this.status.country = "Offline / API blocked";
+        }
+      }
+    }
+  });
+</script>

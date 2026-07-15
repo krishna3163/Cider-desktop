@@ -1,0 +1,28 @@
+{
+  "electronVersion": "24.3.0",
+  "electronDownload": {
+    "version": "24.3.0+wvcus",
+    "mirror": "https://github.com/castlabs/electron-releases/releases/download/v"
+  },
+  "appId": "cider",
+  "afterPack": "./resources/afterPack.cjs",
+  "afterSign": "./resources/notarize.cjs",
+  "protocols": [
+    {
+      "name": "Cider",
+      "schemes": ["ame", "cider", "itms", "itmss", "musics", "music"]
+    }
+  ],
+  "extends": null,
+  "files": ["./build/**/*", "./src/**/*", "./resources/icons/**/*"],
+  "nsis": {
+    "oneClick": true,
+    "perMachine": false,
+    "deleteAppDataOnUninstall": true,
+    "artifactName": "${productName}-Setup-winget-${version}.${ext}"
+  },
+  "win": {
+    "target": ["nsis"],
+    "icon": "resources/icons/icon.ico"
+  }
+}

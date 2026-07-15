@@ -1,0 +1,61 @@
+name: Cider Chores
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  compile-and-post:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Build/release Electron app
+        uses: samuelmeuli/action-electron-builder@v1.6.0
+        with:
+          # GitHub token, automatically provided to the action
+          # (No need to define this secret in the repo settings)
+          github_token: ${{ secrets.github_token }}
+
+          # If the commit is tagged with a version (e.g. "v1.0.0"),
+          # release the app after building
+          release: ${{ startsWith(github.ref, 'refs/tags/v') }}
+
+  prettier:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # Make sure the actual branch is checked out when running on pull requests
+          ref: ${{ github.head_ref }}
+
+      - name: Prettify code
+        run: npm run format:write
+
+      - name: Commit Prettier Code
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore: Prettified Code\n [ci skip]"
+          commit_user_name: "cider-chore[bot]"
+          commit_user_email: "cider-chore[bot]@users.noreply.github.com"
