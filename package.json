@@ -48,7 +48,7 @@
     "electron-window-state": "^5.0.3",
     "express": "^4.19.2",
     "get-port": "7.1.0",
-    "jimp": "^0.22.12",
+    "jimp": "^1.6.1",
     "lastfmapi": "^0.1.1",
     "mdns-js": "ciderapp/node-mdns-js",
     "mpris-service": "ciderapp/mpris-service",
