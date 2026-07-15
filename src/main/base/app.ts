@@ -56,6 +56,9 @@ export class AppEvents {
     // Expose GC
     app.commandLine.appendSwitch("js-flags", "--expose_gc");
 
+    // Disable audio autoplay gesture requirement
+    app.commandLine.appendSwitch("autoplay-policy", "no-user-gesture-required");
+
     if (process.platform === "win32") {
       app.setAppUserModelId(app.getName()); // For notification name
     }
