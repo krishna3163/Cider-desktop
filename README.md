@@ -1,80 +1,69 @@
-## ⚠ Cider Classic has approached its End-of-Life status.
-This application is now no longer being actively maintained.  
-No support will be given on Windows.
+<p align="center">
+  <a href="https://github.com/krishna3163/Cider-desktop"><img src="./resources/banner.png" width="90%" alt="Cider Desktop Banner"></a>
+  <br><br>
+  <b>A highly optimized, bug-fixed, and feature-rich development fork of the Apple Music desktop experience. 🚀</b>
+  <br><br>
+  <img src="https://img.shields.io/github/stars/krishna3163/Cider-desktop?label=Stars&style=for-the-badge&color=fc3c44" alt="GitHub Stars"/>
+  <img src="https://img.shields.io/github/forks/krishna3163/Cider-desktop?label=Forks&style=for-the-badge&color=B48C69" alt="GitHub Forks"/>
+  <a href="https://github.com/krishna3163/Cider-desktop/releases/latest"><img src="https://img.shields.io/github/v/release/krishna3163/Cider-desktop?label=Version&style=for-the-badge&color=4caf50" alt="Latest Version"/></a>
+</p>
 
-Thanks for your continued support.
-
-[Get Cider 2 today.](https://cider.sh/download)
-
-<a href="https://cider.sh/download"><img src="./src/renderer/assets/c1-c2.png" height="64px" alt="Banner"></a>
-<a href="https://cidercollective.itch.io/cider"><img src="https://cider.sh/assets/itch-badge.svg" height="64px" alt="Banner"></a>
 ---
 
-<p align="center">
-  <a href="https://cider.sh"><img src="./resources/banner.png" width="80%" height="60%" alt="Banner"></a>
-  <br>
-  <b>A new cross-platform Apple Music experience based on Electron and Vue.js written from scratch with performance & visuals in mind. 🚀</b>
-  <br><br>
-  <img src="https://img.shields.io/github/stars/ciderapp/Cider?label=Stars" alt="GitHub Stars"/>
-  <img src="https://img.shields.io/github/forks/ciderapp/Cider?label=Forks" alt="GitHub Forks"/>
-  <a title="Crowdin" target="_blank" href="https://crowdin.com/project/cider-music"><img src="https://badges.crowdin.net/cider-i18n/localized.svg"></a>
-  <br>
-  <a target="_blank" href="https://ko-fi.com/cryptofyre"><img src="https://img.shields.io/badge/Buy%20Us%20a%20Coffee-donate-B48C69?logo=Ko-fi&logoColor=FFFFFF" alt="Buy Me A Coffee"/></a>
-  <a target="_blank" href="https://opencollective.com/ciderapp"><img src="https://img.shields.io/opencollective/all/ciderapp?color=%237FADF2&label=Backers%20and%20Sponsors&logo=opencollective" alt="Open Collective"/></a>
-    <a target="_blank" href="https://github.com/sponsors/ciderapp"><img src="https://img.shields.io/github/sponsors/ciderapp?color=C96198&label=GitHub%20Sponsors&logo=GitHub" alt="GitHub Sponsor"/></a>
-  <br>
-  <a target="_blank" href="https://jq.qq.com/?_wv=1027&k=2VP4cdyo"><img src="https://img.shields.io/badge/QQ-531185058-red" alt="QQ群"/></a>
-  <a target="_blank" href="https://discord.gg/applemusic"><img src="https://img.shields.io/discord/843954443845238864?label=Discord&color=5865F2&logo=discord&logoColor=white&style=flat" alt="Discord"/></a>
-  <a target="_blank" href="https://twitter.com/UseCider"><img src="https://img.shields.io/twitter/follow/UseCider?label=Twitter&color=%231DA1F2&logo=twitter&style=flat" alt="Twitter"/></a>
-  <a target="_blank" href="https://reddit.com/r/applemusicelectron"><img src="https://custom-icon-badges.herokuapp.com/reddit/subreddit-subscribers/applemusicelectron?label=Reddit&color=FF5700&logo=redditnew" alt="Reddit"/></a>
-  <br><br>
-  <a href="https://dev.azure.com/cidercollective/Cider/_build?definitionId=14"><img src="https://dev.azure.com/cidercollective/Cider/_apis/build/status%2FCider%201.x?branchName=main" alt="Azure Pipelines Status"/></a>
-</p>
+## 🔥 Key Enhancements & Fixes in this Fork
 
-#### Links
+This fork modernizes Cider Classic and resolves critical errors that broke Apple Music playback and local library streaming.
 
-* [Documentation](https://docs.cider.sh)
-* [Request Feature](https://github.com/ciderapp/Cider/discussions/new?category=feature-request)
-* [Report Bug](https://github.com/ciderapp/Cider/issues/new?assignees=&labels=bug&template=bug_report.md&title=%5BBUG%5D+)
-* [**View The Releases**](https://github.com/ciderapp/cider-releases/releases/latest)
+### 🍏 Playback & DRM Optimizations
+* **Forced Hardware Acceleration (Windows):** Overrides configurations to force GPU acceleration on Windows. This bypasses the Chromium Widevine `DRMUNSUPPORTED` error that restricted playback to 30-second previews and skipped songs.
+* **Apple Music Developer Token Fallback:** Automatically fetches fallback tokens when official key-rotation servers are offline, keeping catalog streams functional.
 
-### Install Sources
-[![Get it from Github](https://img.shields.io/badge/Get_It_From_GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ciderapp/cider-releases/releases/latest)
+### 📁 Rich Local Library Support
+* **Multi-Format Support:** Stream `flac`, `m4a`, `mp3`, `aac`, `ogg`, `wav`, `webm`, and `opus` files directly.
+* **Instantaneous Loading (Metadata Cache):** Scanned local songs are cached in a JSON storage layer. The app uses the *Stale-While-Revalidate* pattern to load tracks instantly on startup and scan directories in the background.
+* **Folder Sync:** Added a direct **Sync Folders** button on the local playlist page for on-demand folder indexing.
 
-[![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget_-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/CiderCollective.Cider)
-[![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget_(Nightly)_-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/CiderCollective.Cider.Nightly)
+### ⚡ Lower CPU Usage & Smooth Animations
+* **V8 Garbage Collection Fix:** Increased the old-space V8 memory limit from `350MB` to `1024MB` (1GB) to prevent GC cycles from stuttering the UI thread and spiking CPU usage.
+* **GPU Compositor Acceleration:** Configured CSS `will-change` properties on transition-heavy elements, transferring visual animation loads directly to your GPU.
 
-[![Get it from Chocolatey Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Chocolatey_-100000?style=for-the-badge&logo=chocolatey)](https://community.chocolatey.org/packages/cider)
+### 🛠️ Interactive DRM Diagnostics
+* **Live Status Check:** The app automatically checks your storefront region, IP country location, internet state, and subscription status when an error is caught.
+* **Troubleshooting Assistant:** Displays recommendations to solve regional locks and expired login sessions.
 
-<!--
-[![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget_(Nightly)_-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/CiderCollective.Cider.Nightly)
--->
+---
 
-[![Get it from Flathub](https://img.shields.io/badge/Get_It_From_Flathub-100000?style=for-the-badge&logo=flathub)](https://flathub.org/apps/details/sh.cider.Cider)
+## 📥 Get the Application (Windows)
 
-<!--
+Download the pre-compiled installer directly from the releases page:
 
-[![Get it from Windows Package Manager](https://custom-icon-badges.herokuapp.com/badge/Get_It_via_Winget-100000?style=for-the-badge&logo=winstall)](https://winstall.app/apps/cryptofyre.AppleMusicElectron)
+👉 **[Download Cider Dev Setup (Releases)](https://github.com/krishna3163/Cider-desktop/releases)**
 
-[![Get it from the Snap Store](https://img.shields.io/badge/Get_It_From_The_Snap_Store-100000?style=for-the-badge&logo=snapcraft)](https://snapcraft.io/apple-music-electron)
--->
-[![Get it from the AUR](https://img.shields.io/badge/Get_It_From_The_AUR-100000?style=for-the-badge&logo=archlinux)](https://aur.archlinux.org/packages/cider)
+---
 
-### Insights Snapshot
-[![CircleCI](https://dl.circleci.com/insights-snapshot/gh/ciderapp/Cider/main/build_and_release/badge.svg?window=30d)](https://app.circleci.com/insights/github/ciderapp/Cider/workflows/build_and_release/overview?branch=main&reporting-window=last-30-days&insights-snapshot=true)
+## 🛠️ Development & Build Guide
 
-### Credits
-![Contributors](https://contrib.rocks/image?repo=ciderapp/Cider)
+Ensure you have [Node.js (>= 18)](https://nodejs.org/) installed:
 
-### Disclaimer
-*This project is NOT affiliated with Apple in any way shape or form. The project is open source and free to use (with an Apple Music subscription)
-for any legal concerns contact me at <a href="mailto:cryptofyre@cryptofyre.org">cryptofyre@cryptofyre.org</a>.*
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/krishna3163/Cider-desktop.git
+   cd Cider-desktop
+   ```
+2. Install dependencies:
+   ```bash
+   yarn install
+   ```
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+4. Build and compile the Windows installer:
+   ```bash
+   npm run dist:win
+   ```
 
-<p align="center">
-  <br>
-  <a> Project Supporters </a>
-  <br>
-  <br>
-  <img href="https://www.jetbrains.com/" width="120px" height="125px" src="https://logonoid.com/images/jetbrains-logo.png" alt="JetBrains">
-  <img href="https://www.macstadium.com/" width="300px" src="https://user-images.githubusercontent.com/33162551/124784795-df5d4c80-df0b-11eb-99a7-dc2b1cfb81bd.png" alt="MacStadium">
-</p>
+---
+
+## Disclaimer
+*This project is NOT affiliated with Apple in any way. You must have an active Apple Music subscription to stream catalog tracks.*
