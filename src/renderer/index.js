@@ -119,17 +119,22 @@ window.addEventListener("drmUnsupported", function () {
   if (typeof navigator.requestMediaKeySystemAccess === "function") {
     console.log("[Cider][DRM-Fix] EME API is available. Widevine should be supported.");
     // Try requesting Widevine access to verify
-    navigator.requestMediaKeySystemAccess("com.widevine.alpha", [{
-      initDataTypes: ["cenc"],
-      audioCapabilities: [{ contentType: 'audio/mp4; codecs="mp4a.40.2"' }],
-      distinctiveIdentifier: "optional",
-      persistentState: "optional",
-    }]).then(function(access) {
-      console.log("[Cider][DRM-Fix] Widevine access granted:", access.keySystem);
-    }).catch(function(err) {
-      console.error("[Cider][DRM-Fix] Widevine access DENIED:", err.message);
-      console.warn("[Cider][DRM-Fix] Your system may not support hardware DRM decryption. Some tracks may only play 30-second previews.");
-    });
+    navigator
+      .requestMediaKeySystemAccess("com.widevine.alpha", [
+        {
+          initDataTypes: ["cenc"],
+          audioCapabilities: [{ contentType: 'audio/mp4; codecs="mp4a.40.2"' }],
+          distinctiveIdentifier: "optional",
+          persistentState: "optional",
+        },
+      ])
+      .then(function (access) {
+        console.log("[Cider][DRM-Fix] Widevine access granted:", access.keySystem);
+      })
+      .catch(function (err) {
+        console.error("[Cider][DRM-Fix] Widevine access DENIED:", err.message);
+        console.warn("[Cider][DRM-Fix] Your system may not support hardware DRM decryption. Some tracks may only play 30-second previews.");
+      });
   } else {
     console.error("[Cider][DRM-Fix] EME API is NOT available in this browser context. DRM playback is impossible.");
   }

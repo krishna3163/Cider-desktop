@@ -4041,9 +4041,7 @@ const app = new Vue({
           app.mk.stop().then(() => {
             app.mk.setQueue({ items: mediaItems }).then(() => {
               // Find the target item index after queue is fully built
-              const targetIndex = app.mk.queue._itemIDs.findIndex(
-                (element) => element == item.id
-              );
+              const targetIndex = app.mk.queue._itemIDs.findIndex((element) => element == item.id);
               const goToIndex = targetIndex >= 0 ? targetIndex : 0;
               // Use setTimeout to let MusicKit finish indexing before seeking
               setTimeout(() => {
