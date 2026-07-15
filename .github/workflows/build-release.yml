@@ -9,6 +9,9 @@ on:
 permissions:
   contents: write
 
+env:
+  PIP_BREAK_SYSTEM_PACKAGES: 1
+
 jobs:
   build:
     strategy:
