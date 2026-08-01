@@ -40,7 +40,7 @@
     "castv2-client": "ciderapp/node-castv2-client",
     "chokidar": "^3.6.0",
     "discord-auto-rpc": "^1.0.17",
-    "ejs": "^3.1.10",
+    "ejs": "^6.0.1",
     "electron-log": "^5.1.4",
     "electron-notarize": "^1.2.2",
     "electron-store": "^9.0.0",
