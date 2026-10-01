@@ -81,7 +81,7 @@
     "@types/ws": "^8.5.10",
     "@types/xml2js": "^0.4.14",
     "electron": "github:castlabs/electron-releases#v30.0.4+wvcus",
-    "electron-builder": "^24.13.3",
+    "electron-builder": "^26.15.3",
     "electron-builder-notarize-pkg": "^1.2.0",
     "electron-webpack": "^2.8.2",
     "less": "^4.2.0",
